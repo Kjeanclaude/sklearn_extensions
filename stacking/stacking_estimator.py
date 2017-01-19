@@ -51,7 +51,7 @@ class StackingEstimator(BaseEstimator):
                 vals = np.average(vals, axis=1)
 
         if self.use_original_features:
-            vals = np.hstack((X, vals))
+            vals = np.column_stack((X, vals))
 
         return vals
 
@@ -86,14 +86,14 @@ class StackingEstimator(BaseEstimator):
         return np.concatenate(meta_features)
 
     def _fit_meta_classifier(self, X, y):
+        self.meta_est_ = clone(self.meta_estimator)
+
         if self.verbose > 0:
             print("Fitting meta classifier {est_name}"
                   .format(est_name=type(self.meta_est_).__name__.lower()))
 
         if self.verbose > 1 and hasattr(self.meta_est_, 'verbose'):
             self.meta_est_.set_params(verbose=self.verbose - 1)
-
-        self.meta_est_ = clone(self.meta_estimator)
 
     def fit(self, X, y):
         meta_features = self._fit_meta_features(X, y)
