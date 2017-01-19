@@ -51,7 +51,7 @@ class StackingEstimator(BaseEstimator):
                 vals = np.average(vals, axis=1)
 
         if self.use_original_features:
-            vals = np.concatenate((X, vals), axis=1)
+            vals = np.hstack((X, vals))
 
         return vals
 
