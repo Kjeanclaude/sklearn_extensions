@@ -95,6 +95,8 @@ class StackingEstimator(BaseEstimator):
         if self.verbose > 1 and hasattr(self.meta_est_, 'verbose'):
             self.meta_est_.set_params(verbose=self.verbose - 1)
 
+        self.meta_est_.fit(X, y)
+
     def fit(self, X, y):
         meta_features = self._fit_meta_features(X, y)
 
