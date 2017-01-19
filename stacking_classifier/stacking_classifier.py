@@ -8,14 +8,14 @@ import numpy as np
 class StackingClassifier(BaseEstimator, ClassifierMixin):
 
     def __init__(self,
-                 classifiers,
+                 estimators,
                  meta_classifier,
                  cv,
                  use_proba=True,
                  average_proba=False,
                  verbose=0):
 
-        self.classifiers = classifiers
+        self.estimators = estimators
         self.meta_classifier = meta_classifier
         self.cv = cv
         self.use_proba = use_proba
