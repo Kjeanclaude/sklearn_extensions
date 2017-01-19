@@ -16,7 +16,7 @@ class StackingEstimator(BaseEstimator):
                  average_predictions=False,
                  meta_features_preprocessing=lambda x: x,
                  target_preprocessing=lambda x, y: y,
-                 verbose=2):
+                 verbose=0):
 
         self.estimators = estimators
         self.meta_estimator = meta_estimator
