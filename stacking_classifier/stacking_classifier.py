@@ -14,6 +14,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
                  use_original_features=False,
                  use_probas=True,
                  average_predictions=False,
+                 meta_features_preprocessing=lambda x: x,
                  verbose=2):
 
         self.estimators = estimators
@@ -22,11 +23,12 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         self.use_original_features = use_original_features
         self.use_probas = use_probas
         self.average_predictions = average_predictions
+        self.meta_features_preprocessing = meta_features_preprocessing
         self.verbose = verbose
 
     def _preprocess_meta_features(self, X):
 
-        return X
+        return self.meta_features_preprocessing(X)
 
     def _predict_meta_features(self, X):
         if self.use_probas:
