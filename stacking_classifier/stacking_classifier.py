@@ -5,30 +5,36 @@ from sklearn.base import clone
 import numpy as np
 
 
-class StackingClassifier(BaseEstimator, ClassifierMixin):
+class StackingEstimator(BaseEstimator):
 
     def __init__(self,
                  estimators,
-                 meta_classifier,
+                 meta_estimator,
                  cv,
                  use_original_features=False,
                  use_probas=True,
                  average_predictions=False,
                  meta_features_preprocessing=lambda x: x,
+                 target_prprocessing=lambda x, y: y,
                  verbose=2):
 
         self.estimators = estimators
-        self.meta_classifier = meta_classifier
+        self.meta_estimator = meta_estimator
         self.cv = cv
         self.use_original_features = use_original_features
         self.use_probas = use_probas
         self.average_predictions = average_predictions
         self.meta_features_preprocessing = meta_features_preprocessing
+        self.target_preprocessing = target_prprocessing
         self.verbose = verbose
 
     def _preprocess_meta_features(self, X):
 
         return self.meta_features_preprocessing(X)
+
+    def _preprocess_target(self, X, y):
+
+        return self.target_preprocessing(X, y)
 
     def _predict_meta_features(self, X):
         if self.use_probas:
@@ -82,12 +88,12 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
     def _fit_meta_classifier(self, X, y):
         if self.verbose > 0:
             print("Fitting meta classifier {est_name}"
-                  .format(est_name=type(self.meta_clf_).__name__.lower()))
+                  .format(est_name=type(self.meta_est_).__name__.lower()))
 
-        if self.verbose > 1 and hasattr(self.meta_clf_, 'verbose'):
-            self.meta_clf_.set_params(verbose=self.verbose - 1)
+        if self.verbose > 1 and hasattr(self.meta_est_, 'verbose'):
+            self.meta_est_.set_params(verbose=self.verbose - 1)
 
-        self.meta_clf_ = clone(self.meta_classifier)
+        self.meta_est_ = clone(self.meta_estimator)
 
     def fit(self, X, y):
         meta_features = self._fit_meta_features(X, y)

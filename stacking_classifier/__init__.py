@@ -1,3 +1,3 @@
-from .stacking_classifier import StackingClassifier
+from .stacking_classifier import StackingEstimator
 
-__all__ = ['StackingClassifier']
+__all__ = ['StackingEstimator']
