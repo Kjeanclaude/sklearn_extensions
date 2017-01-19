@@ -102,3 +102,9 @@ class StackingEstimator(BaseEstimator):
         self._fit_meta_classifier(meta_features, meta_y)
 
         return self
+
+    def predict(self, X):
+        meta_features = self._predict_meta_features(X)
+        meta_features = self._preprocess_meta_features(X)
+
+        return self.meta_est_.predict(meta_features)
