@@ -64,7 +64,7 @@ class StackingEstimator(BaseEstimator):
         for i, est in enumerate(self.ests_):
             if self.verbose > 0:
                 print("Fitting estimators {est_i}: {est_name} ({est_i}/{est_count})"
-                      .format(est_i=i, est_name=type(est).__name__.lower(), est_count=len(self.ests_)))
+                      .format(est_i=i+1, est_name=type(est).__name__.lower(), est_count=len(self.ests_)))
 
             if self.verbose > 1 and hasattr(est, 'verbose'):
                 est.set_params(verbose=self.verbose - 1)
