@@ -15,7 +15,7 @@ class StackingEstimator(BaseEstimator):
                  use_probas=True,
                  average_predictions=False,
                  meta_features_preprocessing=lambda x: x,
-                 target_prprocessing=lambda x, y: y,
+                 target_preprocessing=lambda x, y: y,
                  verbose=2):
 
         self.estimators = estimators
@@ -25,7 +25,7 @@ class StackingEstimator(BaseEstimator):
         self.use_probas = use_probas
         self.average_predictions = average_predictions
         self.meta_features_preprocessing = meta_features_preprocessing
-        self.target_preprocessing = target_prprocessing
+        self.target_preprocessing = target_preprocessing
         self.verbose = verbose
 
     def _preprocess_meta_features(self, X):
