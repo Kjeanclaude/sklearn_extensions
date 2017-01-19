@@ -13,7 +13,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
                  cv,
                  use_original_features=False,
                  use_probas=True,
-                 average_probas=False,
+                 average_predictions=False,
                  verbose=2):
 
         self.estimators = estimators
@@ -21,7 +21,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         self.cv = cv
         self.use_original_features = use_original_features
         self.use_probas = use_probas
-        self.average_probas = average_probas
+        self.average_predictions = average_predictions
         self.verbose = verbose
 
     def _preprocess_meta_features(self, X):
@@ -32,12 +32,15 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         if self.use_probas:
             probas = np.asarray([est.predict_proba(X)
                                  for est in self.ests_])
-            if self.average_probas:
+            if self.average_predictions:
                 vals = np.average(probas, axis=0)
             else:
                 vals = np.concatenate(probas, axis=1)
         else:
             vals = np.column_stack([est.predict(X) for est in self.ests_])
+
+            if self.average_predictions:
+                vals = np.average(vals, axis=1)
 
         if self.use_original_features:
             vals = np.concatenate((X, vals), axis=1)
