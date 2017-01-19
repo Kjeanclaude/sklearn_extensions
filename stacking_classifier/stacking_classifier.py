@@ -6,4 +6,18 @@ import numpy as np
 
 
 class StackingClassifier(BaseEstimator, ClassifierMixin):
-    pass
+
+    def __init__(self,
+                 classifiers,
+                 meta_classifier,
+                 cv,
+                 use_proba=True,
+                 average_proba=False,
+                 verbose=0):
+
+        self.classifiers = classifiers
+        self.meta_classifier = meta_classifier
+        self.cv = cv
+        self.use_proba = use_proba
+        self.average_proba = average_proba
+        self.verbose = verbose
