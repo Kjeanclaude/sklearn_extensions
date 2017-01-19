@@ -24,6 +24,10 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         self.average_probas = average_probas
         self.verbose = verbose
 
+    def _preprocess_meta_features(self, X):
+
+        return X
+
     def _predict_meta_features(self, X):
         if self.use_probas:
             probas = np.asarray([est.predict_proba(X)
@@ -61,6 +65,7 @@ class StackingClassifier(BaseEstimator, ClassifierMixin):
         for train_index, test_index in self.cv:
             self._fit_estimators(X[train_index], y[train_index])
             local_meta_features = self._predict_meta_features(X[test_index])
+            local_meta_features = self._preprocess_meta_features(local_meta_features)
 
             if meta_features is None:
                 meta_features = np.zeros((X.shape[0], local_meta_features.shape[1]))
