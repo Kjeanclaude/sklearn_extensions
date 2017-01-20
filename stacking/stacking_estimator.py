@@ -83,7 +83,7 @@ class StackingEstimator(BaseEstimator):
 
             meta_features[test_index] = local_meta_features
 
-        return np.concatenate(meta_features)
+        return meta_features
 
     def _fit_meta_classifier(self, X, y):
         self.meta_est_ = clone(self.meta_estimator)
