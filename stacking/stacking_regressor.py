@@ -13,6 +13,7 @@ class StackingRegressor(StackingEstimator, RegressorMixin):
                  average_predictions=False,
                  meta_features_preprocessing=lambda x: x,
                  target_preprocessing=lambda x, y: y,
+                 data_preprocessing=None,
                  verbose=0):
 
         super(StackingRegressor, self).__init__(estimators,
@@ -23,4 +24,5 @@ class StackingRegressor(StackingEstimator, RegressorMixin):
                                                 average_predictions,
                                                 meta_features_preprocessing,
                                                 target_preprocessing,
+                                                data_preprocessing,
                                                 verbose)
