@@ -12,6 +12,7 @@ class StackingClassifier(StackingEstimator, ClassifierMixin):
                  use_probas=True,
                  average_predictions=False,
                  meta_features_preprocessing=lambda x: x,
+                 meta_target_preprocessing=lambda x, y: y,
                  target_preprocessing=lambda x, y: y,
                  data_preprocessing=None,
                  verbose=0):
