@@ -14,6 +14,7 @@ class StackingEstimator(BaseEstimator):
                  use_probas=True,
                  average_predictions=False,
                  meta_features_preprocessing=lambda x: x,
+                 meta_target_preprocessing=lambda x, y: y,
                  target_preprocessing=lambda x, y: y,
                  data_preprocessing=None,
                  verbose=0):
@@ -25,17 +26,10 @@ class StackingEstimator(BaseEstimator):
         self.use_probas = use_probas
         self.average_predictions = average_predictions
         self.meta_features_preprocessing = meta_features_preprocessing
+        self.meta_target_preprocessing = meta_target_preprocessing
         self.target_preprocessing = target_preprocessing
         self.data_preprocessing = data_preprocessing
         self.verbose = verbose
-
-    def _preprocess_meta_features(self, X):
-
-        return self.meta_features_preprocessing(X)
-
-    def _preprocess_target(self, X, y):
-
-        return self.target_preprocessing(X, y)
 
     def _predict_meta_features(self, X):
         if self.use_probas:
@@ -51,9 +45,9 @@ class StackingEstimator(BaseEstimator):
             probas = np.asarray(probas)
 
             if self.average_predictions:
-                vals = np.average(probas, axis=0)
+                meta_features = np.average(probas, axis=0)
             else:
-                vals = np.concatenate(probas, axis=1)
+                meta_features = np.concatenate(probas, axis=1)
         else:
             predictions = []
 
@@ -64,17 +58,21 @@ class StackingEstimator(BaseEstimator):
 
                 predictions += [est.predict(est_X)]
 
-            vals = np.column_stack(predictions)
+            meta_features = np.column_stack(predictions)
 
             if self.average_predictions:
-                vals = np.average(vals, axis=1)
+                meta_features = np.average(meta_features, axis=1)
 
         if self.use_original_features:
-            vals = np.column_stack((X, vals))
+            meta_features = np.column_stack((X, meta_features))
 
-        return vals
+        meta_features = self.meta_features_preprocessing(meta_features)
+
+        return meta_features
 
     def _fit_estimators(self, X, y):
+        y = self.target_preprocessing(X, y)
+
         self.ests_ = [clone(est) for est in self.estimators]
 
         if self.verbose > 0:
@@ -99,7 +97,6 @@ class StackingEstimator(BaseEstimator):
         for train_index, test_index in self.cv.split(X):
             self._fit_estimators(X[train_index], y[train_index])
             local_meta_features = self._predict_meta_features(X[test_index])
-            local_meta_features = self._preprocess_meta_features(local_meta_features)
 
             if meta_features is None:
                 meta_features = np.zeros((X.shape[0], local_meta_features.shape[1]))
@@ -111,6 +108,8 @@ class StackingEstimator(BaseEstimator):
         return meta_features
 
     def _fit_meta_classifier(self, X, y):
+        y = self.meta_target_preprocessing(X, y)
+
         self.meta_est_ = clone(self.meta_estimator)
 
         if self.verbose > 0:
@@ -124,14 +123,11 @@ class StackingEstimator(BaseEstimator):
 
     def fit(self, X, y):
         meta_features = self._fit_meta_features(X, y)
-
-        meta_y = self._preprocess_target(X, y)
-        self._fit_meta_classifier(meta_features, meta_y)
+        self._fit_meta_classifier(meta_features, y)
 
         return self
 
     def predict(self, X):
         meta_features = self._predict_meta_features(X)
-        meta_features = self._preprocess_meta_features(meta_features)
 
         return self.meta_est_.predict(meta_features)
